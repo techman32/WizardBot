@@ -3,6 +3,7 @@ import {Context, Markup, Telegraf} from 'telegraf'
 
 export class StartCommand extends Command {
     partnerChannelId: string
+    withSubscribe: boolean = false
 
     constructor(bot: Telegraf<Context>) {
         super(bot)
@@ -11,10 +12,16 @@ export class StartCommand extends Command {
 
     handle(): void {
         this.bot.start(async (ctx) => {
-            ctx.reply('Для использования бота необходимо подписаться на канал наших партнеров', Markup.inlineKeyboard([
-                [Markup.button.url('Подписаться', `https://t.me/${this.partnerChannelId.slice(1)}`)],
-                [Markup.button.callback('Проверить подписку', `check_subscription`)]
-            ]))
+            if (this.withSubscribe) {
+                ctx.reply('Для использования бота необходимо подписаться на канал наших партнеров', Markup.inlineKeyboard([
+                    [Markup.button.url('Подписаться', `https://t.me/${this.partnerChannelId.slice(1)}`)],
+                    [Markup.button.callback('Проверить подписку', `check_subscription`)]
+                ]))
+            } else {
+                ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard([
+                    ['🔍 Найти ответ'], ['🔺 Для правообладателей']
+                ]).resize())
+            }
         })
 
         this.bot.action('check_subscription', async (ctx) => {
