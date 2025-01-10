@@ -1,8 +1,18 @@
 import axios, {AxiosResponse} from 'axios'
-import IApiService, {IBook, IBookPages, IGrade, ISolution, ISubject, ITask} from './api.interface'
+import IApiService, {
+    IBook,
+    IBookmark,
+    IBookPages,
+    IGrade,
+    ISolution,
+    IStatistic,
+    ISubject,
+    ITask,
+    IUser
+} from './api.interface'
 
 export class ApiService implements IApiService {
-    baseUrl: string = 'http://89.223.127.62:5000/api'
+    baseUrl: string = 'http://147.45.185.35:5000/api'
 
     async getGrades(): Promise<IGrade[]> {
         const url = this.baseUrl + '/grades'
@@ -79,9 +89,99 @@ export class ApiService implements IApiService {
         return await this.fetchData<ISolution>(url)
     }
 
+    async setUser(user: IUser): Promise<boolean> {
+        const url = this.baseUrl + `/users`
+
+        try {
+            const response = await axios.post(url, {
+                telegramId: user.id
+            })
+            if (response.status === 200) {
+                return true
+            }
+        } catch (error) {
+            console.error(`Ошибка при запросе к URL: ${url}`, error)
+        }
+
+        return false
+    }
+
+    async getUserRole(user: IUser): Promise<string> {
+        const url = this.baseUrl + `/users/${user.id}/role`
+
+        try {
+            const response = await axios.get(url)
+            if (response.status === 200) {
+                return response.data.role
+            }
+        } catch (error) {
+            console.error(`Ошибка при запросе к URL: ${url}`, error)
+        }
+
+        return 'default'
+    }
+
+    async setBookmark(user: IUser, bookmark: IBookmark): Promise<boolean> {
+        const url = this.baseUrl + `/users/bookmarks`
+
+        try {
+            const response = await axios.post(url, {
+                telegramId: user.id,
+                bookmark: bookmark.bookmark
+            })
+            if (response.status === 200) {
+                return true
+            }
+        } catch (error) {
+            console.error(`Ошибка при запросе к URL: ${url}`, error)
+        }
+
+        return false
+    }
+
+    async getBookmarks(user: IUser): Promise<IBookmark[]> {
+        const url = this.baseUrl + `/users/${user.id}/bookmarks`
+        return await this.fetchData<IBookmark>(url)
+    }
+
+    async deleteBookmark(user: IUser, path: string): Promise<boolean> {
+        const url = this.baseUrl + `/delete-bookmark`
+
+        try {
+            const response = await axios.post(url, {
+                telegramId: user.id,
+                bookmark: path
+            })
+
+            if (response.status === 200) {
+                return true
+            }
+        } catch (error) {
+            console.error(`Ошибка при запросе к URL: ${url}`, error)
+        }
+
+        return false
+    }
+
+    async getStatistic(): Promise<IStatistic | null> {
+        const url = this.baseUrl + `/statistic`
+
+        try {
+            const response = await axios.get(url)
+
+            if (response.status === 200) {
+                return response.data
+            }
+        } catch (error) {
+            console.error(`Ошибка при запросе к URL: ${url}`, error)
+        }
+        return null
+    }
+
     async fetchData<T>(url: string): Promise<T[]> {
         try {
             const response: AxiosResponse<T[]> = await axios.get(url)
+
             if (response.status === 200) {
                 return response.data
             }

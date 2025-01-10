@@ -1,13 +1,21 @@
 import {Command} from './command.class'
 import {Context, Markup, Telegraf} from 'telegraf'
+import {ApiService} from '../api/api.service'
+import {IUser} from '../api/api.interface'
 
 export class StartCommand extends Command {
+    private readonly apiService: ApiService
     partnerChannelId: string
     withSubscribe: boolean = false
+    keyboard: string[][]
 
-    constructor(bot: Telegraf<Context>) {
+    constructor(bot: Telegraf<Context>, apiService: ApiService) {
         super(bot)
         this.partnerChannelId = '@tshfjamm'
+        this.apiService = apiService
+        this.keyboard = [
+            ['🔍 Найти ответ'], ['📔 Закладки'], ['🔺 Для правообладателей']
+        ]
     }
 
     handle(): void {
@@ -18,9 +26,23 @@ export class StartCommand extends Command {
                     [Markup.button.callback('Проверить подписку', `check_subscription`)]
                 ]))
             } else {
-                ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard([
-                    ['🔍 Найти ответ'], ['🔺 Для правообладателей']
-                ]).resize())
+                try {
+                    const user: IUser = {
+                        id: ctx.from.id
+                    }
+
+                    await this.apiService.setUser(user)
+
+                    const userRole = await this.apiService.getUserRole(user)
+                    if (userRole === 'admin') {
+                        Markup.removeKeyboard()
+                        this.keyboard.push(['📊 Статистика'])
+                    }
+
+                    ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard(this.keyboard).resize())
+                } catch (error) {
+                    console.error(error)
+                }
             }
         })
 
@@ -31,10 +53,17 @@ export class StartCommand extends Command {
                 if (['left', 'kicked'].includes(chatMember.status)) {
                     ctx.reply('Вы не подписаны на канал!')
                 } else {
-                    ctx.deleteMessage()
-                    ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard([
-                        ['🔍 Найти ответ'], ['🔺 Для правообладателей']
-                    ]).resize())
+                    try {
+                        const user: IUser = {
+                            id: ctx.from.id
+                        }
+                        await this.apiService.setUser(user)
+
+                        ctx.deleteMessage()
+                        ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard(this.keyboard).resize())
+                    } catch (error) {
+                        console.error(error)
+                    }
                 }
             } catch (error) {
                 console.error(error)

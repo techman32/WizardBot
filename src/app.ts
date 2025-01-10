@@ -14,6 +14,8 @@ import {CloseCommand} from './commands/close.command'
 import {AlertCommand} from './commands/alert.command'
 import {CopyrightCommand} from './commands/copyright.command'
 import {SubSolutionCommand} from './commands/subsolution.command'
+import {BookmarksCommand} from './commands/bookmarks.command'
+import {StatisticCommand} from './commands/statistic.command'
 
 class Bot {
     bot: Telegraf<Context>
@@ -28,7 +30,7 @@ class Bot {
 
     init() {
         this.commands = [
-            new StartCommand(this.bot),
+            new StartCommand(this.bot, this.apiService),
             new SearchCommand(this.bot, this.apiService),
             new CopyrightCommand(this.bot),
             new GradeCommand(this.bot, this.apiService),
@@ -39,6 +41,9 @@ class Bot {
             new SolutionsCommand(this.bot, this.apiService),
             new SubSolutionCommand(this.bot, this.apiService),
             new AlertCommand(this.bot, this.apiService),
+            new BookmarksCommand(this.bot, this.apiService),
+            new BookCommand(this.bot, this.apiService),
+            new StatisticCommand(this.bot, this.apiService),
             new CloseCommand(this.bot)
         ]
         for (const command of this.commands) {

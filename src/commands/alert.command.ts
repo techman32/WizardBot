@@ -22,7 +22,7 @@ export class AlertCommand extends Command {
                     ctx.reply(`Жалоба на задание с ID: ${solutionId} отправлена. Спасибо!`)
                 }
             } catch (error) {
-                console.log(error)
+                console.error(error)
             }
         })
     }

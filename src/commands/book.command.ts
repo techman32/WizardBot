@@ -17,11 +17,12 @@ export class BookCommand extends Command {
             const bookId = parseInt(match[1])
             const gradeId = parseInt(match[2])
             const subjectSymbol = match[3]
+            const bookmarkPath = ctx.match[0]
 
             try {
                 const details = await this.apiService.getBookDetails(bookId)
                 const caption = `Автор: ${details[0].author}\nГод издания: ${details[0].year}`
-                const buttons = getBookButtons(details, gradeId, subjectSymbol)
+                const buttons = getBookButtons(details, gradeId, subjectSymbol, bookmarkPath)
 
                 if (details[0].image === null) {
                     await ctx.editMessageText(caption, Markup.inlineKeyboard([...buttons]))
