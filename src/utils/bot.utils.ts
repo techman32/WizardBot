@@ -1,5 +1,5 @@
 import {Context, Markup} from 'telegraf'
-import {IBook, IBookPages, IGrade, ISubject, ITask} from '../api/api.interface'
+import {IBook, IBookPages, IGrade, ISolution, ISubject, ITask} from '../api/api.interface'
 
 export const showErrorMessage = async (ctx: Context, error: unknown) => {
     console.error(error)
@@ -89,4 +89,20 @@ export const getTaskButtons = (
     return tasks.map(task => [
         Markup.button.callback(`${task.exercise}`, `solutions\/${task.id}\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}`)
     ])
+}
+
+export const getSubSolutionButtons = (
+    solutions: ISolution[],
+    taskId: number,
+    bookId: number,
+    pageNumber: number,
+    currentPage: number,
+    gradeId: number,
+    subjectSymbol: string
+) => {
+    return solutions.reduce((rows: any, el, index) => {
+        if (index % 4 === 0) rows.push([])
+        rows[rows.length - 1].push(Markup.button.callback(`${index + 1}`, `subsolution\/${taskId}\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}\/${el.id}`))
+        return rows
+    }, [])
 }

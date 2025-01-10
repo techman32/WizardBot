@@ -1,7 +1,7 @@
 import {Command} from './command.class'
 import {Context, Markup, Telegraf} from 'telegraf'
 import {ApiService} from '../api/api.service'
-import {showErrorMessage} from '../utils/bot.utils'
+import {getSubSolutionButtons, showErrorMessage} from '../utils/bot.utils'
 
 export class SolutionsCommand extends Command {
     private readonly apiService: ApiService
@@ -24,9 +24,7 @@ export class SolutionsCommand extends Command {
             try {
                 const solutions = await this.apiService.getSolutions(taskId)
                 if (solutions.length > 1) {
-                    const solutionButtons = solutions.map((solution, index) => [
-                        Markup.button.callback(`${index + 1}`, `subsolution\/${taskId}\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}\/${solution.id}`)
-                    ])
+                    const solutionButtons = getSubSolutionButtons(solutions, taskId, bookId, pageNumber, currentPage, gradeId, subjectSymbol)
 
                     await ctx.editMessageText('Выберите решение: ', Markup.inlineKeyboard([
                         ...solutionButtons,
