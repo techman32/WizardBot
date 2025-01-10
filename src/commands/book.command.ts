@@ -23,7 +23,7 @@ export class BookCommand extends Command {
                 const caption = `Автор: ${details[0].author}\nГод издания: ${details[0].year}`
                 const buttons = getBookButtons(details, gradeId, subjectSymbol)
 
-                if (details[0].image === null && details[0].isRetelling) {
+                if (details[0].image === null) {
                     await ctx.editMessageText(caption, Markup.inlineKeyboard([...buttons]))
                 } else {
                     await ctx.deleteMessage()

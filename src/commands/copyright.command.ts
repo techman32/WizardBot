@@ -9,7 +9,7 @@ export class CopyrightCommand extends Command {
     handle(): void {
         this.bot.hears('🔺 Для правообладателей', async (ctx) => {
             try {
-                ctx.reply('Все буде защищено')
+                ctx.reply('Все будет защищено')
             } catch (error) {
                 console.error(error)
             }

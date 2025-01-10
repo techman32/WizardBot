@@ -1,17 +1,14 @@
 import {Command} from './command.class'
 import {Context, Markup, Telegraf} from 'telegraf'
 import {ApiService} from '../api/api.service'
-import {TelegraphService} from '../api/telegraph.service'
 import {showErrorMessage} from '../utils/bot.utils'
 
 export class SolutionsCommand extends Command {
     private readonly apiService: ApiService
-    private readonly telegraphService: TelegraphService
 
-    constructor(bot: Telegraf<Context>, apiService: ApiService, telegraphService: TelegraphService) {
+    constructor(bot: Telegraf<Context>, apiService: ApiService) {
         super(bot)
         this.apiService = apiService
-        this.telegraphService = telegraphService
     }
 
     handle(): void {
@@ -26,23 +23,25 @@ export class SolutionsCommand extends Command {
 
             try {
                 const solutions = await this.apiService.getSolutions(taskId)
-                let telegraphUrl
-
-                if (solutions[0].path === null) {
-                    const url = await this.telegraphService.createPage(solutions[0])
-                    await this.apiService.setTelegraphPath(solutions[0].id, url)
-                    telegraphUrl = url
-                } else {
-                    telegraphUrl = solutions[0].path
-                }
-
-                await ctx.editMessageText('Решение доступно по кнопке ниже', Markup.inlineKeyboard([
-                        [Markup.button.url('Открыть решение', `${telegraphUrl}`)],
-                        [Markup.button.callback('🔙 Назад', `tasks\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}`)],
-                        [Markup.button.callback('‼️ Пожаловаться', `alert\/${solutions[0].id}`)],
-                        [Markup.button.callback('❌ Закрыть', 'close')]
+                if (solutions.length > 1) {
+                    const solutionButtons = solutions.map((solution, index) => [
+                        Markup.button.callback(`${index + 1}`, `subsolution\/${taskId}\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}\/${solution.id}`)
                     ])
-                )
+
+                    await ctx.editMessageText('Выберите решение: ', Markup.inlineKeyboard([
+                        ...solutionButtons,
+                        [Markup.button.callback('🔙 Назад', `tasks\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}`)],
+                        [Markup.button.callback('❌ Закрыть', 'close')]
+                    ]))
+                } else {
+                    await ctx.editMessageText('Решение доступно по кнопке ниже', Markup.inlineKeyboard([
+                            [Markup.button.url('Открыть решение', `${solutions[0].path}`)],
+                            [Markup.button.callback('🔙 Назад', `tasks\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}`)],
+                            [Markup.button.callback('‼️ Пожаловаться', `alert\/${solutions[0].id}`)],
+                            [Markup.button.callback('❌ Закрыть', 'close')]
+                        ])
+                    )
+                }
             } catch (error) {
                 await showErrorMessage(ctx, error)
             }

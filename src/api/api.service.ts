@@ -74,6 +74,11 @@ export class ApiService implements IApiService {
         return await this.fetchData<ISolution>(url)
     }
 
+    async getSolutionPath(solutionId: number, limit: number = 40, offset: number = 0): Promise<ISolution[]> {
+        const url = this.baseUrl + `/solutions/${solutionId}/path`
+        return await this.fetchData<ISolution>(url)
+    }
+
     async fetchData<T>(url: string): Promise<T[]> {
         try {
             const response: AxiosResponse<T[]> = await axios.get(url)

@@ -30,10 +30,7 @@ export interface ITask {
 
 export interface ISolution {
     id: number,
-    text: string,
     path: string,
-    isLatex: boolean,
-    images: string[]
 }
 
 export default interface IApiService {
@@ -54,6 +51,8 @@ export default interface IApiService {
     getTasks(bookId: number, pageNumber: number): Promise<ITask[]>
 
     getSolutions(taskId: number): Promise<ISolution[]>
+
+    getSolutionPath(solutionId: number, limit: number, offset: number): Promise<ISolution[]>
 
     sendAlert(solutionId: number): Promise<boolean>
 

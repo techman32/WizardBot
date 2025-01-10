@@ -10,10 +10,10 @@ import {BookCommand} from './commands/book.command'
 import {PagesCommand} from './commands/pages.command'
 import {TasksCommand} from './commands/tasks.command'
 import {SolutionsCommand} from './commands/solutions.command'
-import {TelegraphService} from './api/telegraph.service'
 import {CloseCommand} from './commands/close.command'
 import {AlertCommand} from './commands/alert.command'
 import {CopyrightCommand} from './commands/copyright.command'
+import {SubSolutionCommand} from './commands/subsolution.command'
 
 class Bot {
     bot: Telegraf<Context>
@@ -21,8 +21,7 @@ class Bot {
 
     constructor(
         private readonly configService: ConfigService,
-        private readonly apiService: ApiService,
-        private readonly telegraphService: TelegraphService
+        private readonly apiService: ApiService
     ) {
         this.bot = new Telegraf<Context>(this.configService.get('TELEGRAM_TOKEN'))
     }
@@ -37,7 +36,8 @@ class Bot {
             new BookCommand(this.bot, this.apiService),
             new PagesCommand(this.bot, this.apiService),
             new TasksCommand(this.bot, this.apiService),
-            new SolutionsCommand(this.bot, this.apiService, this.telegraphService),
+            new SolutionsCommand(this.bot, this.apiService),
+            new SubSolutionCommand(this.bot, this.apiService),
             new AlertCommand(this.bot, this.apiService),
             new CloseCommand(this.bot)
         ]
@@ -49,5 +49,5 @@ class Bot {
 }
 
 const configService = new ConfigService()
-const bot = new Bot(configService, new ApiService(), new TelegraphService(configService))
+const bot = new Bot(configService, new ApiService())
 bot.init()

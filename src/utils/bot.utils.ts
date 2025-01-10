@@ -39,7 +39,7 @@ export const getBookButtons = (details: IBook[], gradeId: number, subjectSymbol:
         [Markup.button.callback('🔙 Назад', `back_to_authors\/${gradeId}\/${subjectSymbol}`)],
         [Markup.button.callback('❌ Закрыть', 'close')]
     ]
-    if (details[0].image === null && details[0].isRetelling) {
+    if (details[0].image === null) {
         buttons.unshift([Markup.button.callback('Перейти к заданиям', `tasks\/${details[0].id}\/0\/1\/${gradeId}\/${subjectSymbol}`)])
     } else {
         buttons.unshift([Markup.button.callback('Перейти к учебнику', `pages\/${details[0].id}\/page\/1\/${gradeId}\/${subjectSymbol}`)])
