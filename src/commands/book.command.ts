@@ -20,7 +20,7 @@ export class BookCommand extends Command {
             const bookmarkPath = ctx.match[0]
 
             try {
-                const details = await this.apiService.getBookDetails(bookId)
+                const details = await this.apiService.getBookDetails(ctx.from.id, bookId)
                 const caption = `Автор: ${details[0].author}\nГод издания: ${details[0].year}`
                 const buttons = getBookButtons(details, gradeId, subjectSymbol, bookmarkPath)
 

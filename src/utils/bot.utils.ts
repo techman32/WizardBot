@@ -36,7 +36,9 @@ export const getAuthorButtons = (books: IBook[], gradeId: number, subjectSymbol:
 
 export const getBookButtons = (details: IBook[], gradeId: number, subjectSymbol: string, path: string) => {
     const buttons = [
-        [Markup.button.callback('📔 Добавить в закладки', `addbookmark/${path}`)],
+        details[0].inBookmarks
+            ? []
+            : [Markup.button.callback('📔 Добавить в закладки', `addbookmark/${path}`)],
         [Markup.button.callback('🔙 Назад', `back_to_authors\/${gradeId}\/${subjectSymbol}`)],
         [Markup.button.callback('❌ Закрыть', 'close')]
     ]

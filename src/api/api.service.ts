@@ -13,6 +13,7 @@ import IApiService, {
 
 export class ApiService implements IApiService {
     baseUrl: string = 'http://147.45.185.35:5000/api'
+    token: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOiJqb3BhIn0.Bc0x6s4ZIH-bUdHMJYAa7_jfAhPSkjzCCTPQlvPXyRo'
 
     async getGrades(): Promise<IGrade[]> {
         const url = this.baseUrl + '/grades'
@@ -40,6 +41,10 @@ export class ApiService implements IApiService {
         try {
             const response = await axios.post(url, {
                 solutionId: solutionId
+            }, {
+                headers: {
+                    'ApiKey': this.token
+                }
             })
 
             if (response.status === 200) {
@@ -55,10 +60,15 @@ export class ApiService implements IApiService {
         const url = this.baseUrl + `/save-path`
 
         try {
-            const response: AxiosResponse<{ success: boolean, message: string }> = await axios.post(url, {
-                id: solutionId,
-                path: path
-            })
+            const response: AxiosResponse<{ success: boolean, message: string }> = await axios.post(url,
+                {
+                    id: solutionId,
+                    path: path
+                }, {
+                    headers: {
+                        'ApiKey': this.token
+                    }
+                })
 
             if (response.status === 200) {
                 return response.data.success
@@ -69,9 +79,26 @@ export class ApiService implements IApiService {
         return false
     }
 
-    async getBookDetails(bookId: number): Promise<IBook[]> {
+    async getBookDetails(telegramId: number, bookId: number): Promise<IBook[]> {
         const url = this.baseUrl + `/books/${bookId}/details`
-        return await this.fetchData<IBook>(url)
+        try {
+            const response: AxiosResponse<IBook[]> = await axios.post(url,
+                {
+                    telegramId: telegramId
+                }, {
+                    headers: {
+                        'ApiKey': this.token
+                    }
+                })
+
+            if (response.status === 200) {
+                return response.data
+            }
+        } catch (error) {
+            console.error(`Ошибка при запросе к URL: ${url}`, error)
+        }
+
+        return []
     }
 
     async getTasks(bookId: number, pageNumber: number): Promise<ITask[]> {
@@ -95,6 +122,10 @@ export class ApiService implements IApiService {
         try {
             const response = await axios.post(url, {
                 telegramId: user.id
+            }, {
+                headers: {
+                    'ApiKey': this.token
+                }
             })
             if (response.status === 200) {
                 return true
@@ -110,7 +141,12 @@ export class ApiService implements IApiService {
         const url = this.baseUrl + `/users/${user.id}/role`
 
         try {
-            const response = await axios.get(url)
+            const response = await axios.get(url, {
+                headers: {
+                    'ApiKey': this.token
+                }
+            })
+
             if (response.status === 200) {
                 return response.data.role
             }
@@ -125,10 +161,16 @@ export class ApiService implements IApiService {
         const url = this.baseUrl + `/users/bookmarks`
 
         try {
-            const response = await axios.post(url, {
-                telegramId: user.id,
-                bookmark: bookmark.bookmark
-            })
+            const response = await axios.post(url,
+                {
+                    telegramId: user.id,
+                    bookmark: bookmark.bookmark
+                }, {
+                    headers: {
+                        'ApiKey': this.token
+                    }
+                }
+            )
             if (response.status === 200) {
                 return true
             }
@@ -151,6 +193,10 @@ export class ApiService implements IApiService {
             const response = await axios.post(url, {
                 telegramId: user.id,
                 bookmark: path
+            }, {
+                headers: {
+                    'ApiKey': this.token
+                }
             })
 
             if (response.status === 200) {
@@ -167,7 +213,11 @@ export class ApiService implements IApiService {
         const url = this.baseUrl + `/statistic`
 
         try {
-            const response = await axios.get(url)
+            const response = await axios.get(url, {
+                headers: {
+                    'ApiKey': this.token
+                }
+            })
 
             if (response.status === 200) {
                 return response.data
@@ -180,9 +230,14 @@ export class ApiService implements IApiService {
 
     async fetchData<T>(url: string): Promise<T[]> {
         try {
-            const response: AxiosResponse<T[]> = await axios.get(url)
+            const response: AxiosResponse<T[]> = await axios.get(url, {
+                headers: {
+                    'ApiKey': this.token
+                }
+            })
 
             if (response.status === 200) {
+                console.log(response.data)
                 return response.data
             }
         } catch (error) {

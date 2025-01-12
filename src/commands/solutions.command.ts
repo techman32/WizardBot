@@ -35,7 +35,7 @@ export class SolutionsCommand extends Command {
                     await ctx.editMessageText('Решение доступно по кнопке ниже', Markup.inlineKeyboard([
                             [Markup.button.url('Открыть решение', `${solutions[0].path}`)],
                             [Markup.button.callback('🔙 Назад', `tasks\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}`)],
-                            [Markup.button.callback('‼️ Пожаловаться', `alert\/${solutions[0].id}`)],
+                            !solutions[0].hasTrouble ? [Markup.button.callback('‼️ Пожаловаться', `alert\/${solutions[0].id}`)] : [],
                             [Markup.button.callback('❌ Закрыть', 'close')]
                         ])
                     )

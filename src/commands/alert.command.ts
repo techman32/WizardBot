@@ -19,7 +19,7 @@ export class AlertCommand extends Command {
                 const alertStatus = await this.apiService.sendAlert(solutionId)
 
                 if (alertStatus) {
-                    ctx.reply(`Жалоба на задание с ID: ${solutionId} отправлена. Спасибо!`)
+                    ctx.reply(`Жалоба отправлена. Спасибо!`)
                 }
             } catch (error) {
                 console.error(error)

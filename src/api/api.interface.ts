@@ -32,7 +32,7 @@ export interface IBook {
     year: string,
     image: string,
     author: string,
-    isRetelling: boolean
+    inBookmarks: boolean,
 }
 
 export interface IBookPages {
@@ -48,6 +48,7 @@ export interface ITask {
 export interface ISolution {
     id: number,
     path: string,
+    hasTrouble: boolean,
 }
 
 export default interface IApiService {
@@ -63,7 +64,7 @@ export default interface IApiService {
 
     setTelegraphPath(solutionId: number, path: string): Promise<boolean>
 
-    getBookDetails(bookId: number): Promise<IBook[]>
+    getBookDetails(telegramId: number, bookId: number): Promise<IBook[]>
 
     getTasks(bookId: number, pageNumber: number): Promise<ITask[]>
 

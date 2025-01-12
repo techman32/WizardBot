@@ -24,11 +24,12 @@ export class SubSolutionCommand extends Command {
 
             try {
                 const solution = await this.apiService.getSolutionPath(solutionId)
+
                 if (solution[0].path !== null) {
                     await ctx.editMessageText('Решение доступно по кнопке ниже', Markup.inlineKeyboard([
                             [Markup.button.url('Открыть решение', `${solution[0].path}`)],
                             [Markup.button.callback('🔙 Назад', `solutions\/${taskId}\/${bookId}\/${pageNumber}\/${currentPage}\/${gradeId}\/${subjectSymbol}`)],
-                            [Markup.button.callback('‼️ Пожаловаться', `alert\/${solution[0].id}`)],
+                            !solution[0].hasTrouble ? [Markup.button.callback('‼️ Пожаловаться', `alert\/${solution[0].id}`)] : [],
                             [Markup.button.callback('❌ Закрыть', 'close')]
                         ])
                     )
