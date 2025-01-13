@@ -37,6 +37,10 @@ export class StartCommand extends Command {
                     if (userRole === 'admin') {
                         Markup.removeKeyboard()
                         this.keyboard.push(['📊 Статистика'])
+                    } else {
+                        if (this.keyboard.length === 4) {
+                            this.keyboard.pop()
+                        }
                     }
 
                     ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard(this.keyboard).resize())
