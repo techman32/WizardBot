@@ -13,9 +13,7 @@ export class StartCommand extends Command {
         super(bot)
         this.partnerChannelId = '@tshfjamm'
         this.apiService = apiService
-        this.keyboard = [
-            ['🔍 Найти ответ'], ['📔 Закладки'], ['🔺 Для правообладателей']
-        ]
+        this.keyboard = []
     }
 
     handle(): void {
@@ -35,12 +33,13 @@ export class StartCommand extends Command {
 
                     const userRole = await this.apiService.getUserRole(user)
                     if (userRole === 'admin') {
-                        Markup.removeKeyboard()
-                        this.keyboard.push(['📊 Статистика'])
+                        this.keyboard = [
+                            ['🔍 Найти ответ'], ['📔 Закладки'], ['🔺 Для правообладателей'], ['📊 Статистика']
+                        ]
                     } else {
-                        if (this.keyboard.length === 4) {
-                            this.keyboard.pop()
-                        }
+                        this.keyboard = [
+                            ['🔍 Найти ответ'], ['📔 Закладки'], ['🔺 Для правообладателей']
+                        ]
                     }
 
                     ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard(this.keyboard).resize())
