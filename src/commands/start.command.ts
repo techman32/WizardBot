@@ -6,12 +6,12 @@ import {IUser} from '../api/api.interface'
 export class StartCommand extends Command {
     private readonly apiService: ApiService
     partnerChannelId: string
-    withSubscribe: boolean = false
+    withSubscribe: boolean = true
     keyboard: string[][]
 
     constructor(bot: Telegraf<Context>, apiService: ApiService) {
         super(bot)
-        this.partnerChannelId = '@tshfjamm'
+        this.partnerChannelId = '@gdzmania'
         this.apiService = apiService
         this.keyboard = []
     }
@@ -56,17 +56,24 @@ export class StartCommand extends Command {
                 if (['left', 'kicked'].includes(chatMember.status)) {
                     ctx.reply('Вы не подписаны на канал!')
                 } else {
-                    try {
-                        const user: IUser = {
-                            id: ctx.from.id
-                        }
-                        await this.apiService.setUser(user)
-
-                        ctx.deleteMessage()
-                        ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard(this.keyboard).resize())
-                    } catch (error) {
-                        console.error(error)
+                    const user: IUser = {
+                        id: ctx.from.id
                     }
+
+                    await this.apiService.setUser(user)
+
+                    const userRole = await this.apiService.getUserRole(user)
+                    if (userRole === 'admin') {
+                        this.keyboard = [
+                            ['🔍 Найти ответ'], ['📔 Закладки'], ['🔺 Для правообладателей'], ['📊 Статистика']
+                        ]
+                    } else {
+                        this.keyboard = [
+                            ['🔍 Найти ответ'], ['📔 Закладки'], ['🔺 Для правообладателей']
+                        ]
+                    }
+
+                    ctx.reply('Добро пожаловать в ГДЗ бота!', Markup.keyboard(this.keyboard).resize())
                 }
             } catch (error) {
                 console.error(error)
