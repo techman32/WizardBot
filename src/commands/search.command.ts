@@ -19,7 +19,7 @@ export class SearchCommand extends Command {
                 const chatMember = await ctx.telegram.getChatMember(this.partnerChannelId, ctx.from.id)
 
                 if (['left', 'kicked'].includes(chatMember.status)) {
-                    ctx.reply('Вы не подписаны на канал! Напиши \/start и выберите "Подписаться"', Markup.removeKeyboard())
+                    ctx.reply('Вы не подписаны на канал! Напишите \/start и выберите "Подписаться"', Markup.removeKeyboard())
                 } else {
                     const grades = await this.apiService.getGrades()
                     const buttons = getGradeButtons(grades)
